@@ -8,9 +8,21 @@
   </url>
   <url>
     <loc>https://hossamhamdy99.github.io/migratik-site/blog/</loc>
-    <lastmod>2026-07-21</lastmod>
+    <lastmod>2026-07-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://hossamhamdy99.github.io/migratik-site/blog/export-elementor-bricks-to-json.html</loc>
+    <lastmod>2026-07-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://hossamhamdy99.github.io/migratik-site/blog/export-wordpress-to-json.html</loc>
+    <lastmod>2026-07-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://hossamhamdy99.github.io/migratik-site/blog/migrate-wordpress-to-nextjs-without-losing-seo.html</loc>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Export a WordPress Site to JSON (SEO, Media &amp; Custom Fields Intact)</title>
+<meta name="description" content="Export your whole WordPress site to clean JSON, with rendered content, SEO metadata, media, and custom fields intact, ready for a headless build, a static site, or an AI pipeline.">
+<link rel="canonical" href="https://hossamhamdy99.github.io/migratik-site/blog/export-wordpress-to-json.html">
+<link rel="icon" type="image/png" href="../icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Migratik">
+<meta property="og:title" content="How to Export a WordPress Site to JSON">
+<meta property="og:description" content="Export your whole WordPress site to clean JSON with rendered content, SEO metadata, media, and custom fields intact.">
+<meta property="og:url" content="https://hossamhamdy99.github.io/migratik-site/blog/export-wordpress-to-json.html">
+<meta property="og:image" content="https://hossamhamdy99.github.io/migratik-site/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How to Export a WordPress Site to JSON">
+<meta name="twitter:description" content="Export your whole WordPress site to clean JSON with rendered content, SEO metadata, media, and custom fields intact.">
+<meta name="twitter:image" content="https://hossamhamdy99.github.io/migratik-site/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "How to Export a WordPress Site to JSON",
+  "description": "Export your whole WordPress site to clean JSON with rendered content, SEO metadata, media, and custom fields intact, ready for a headless build, a static site, or an AI pipeline.",
+  "image": "https://hossamhamdy99.github.io/migratik-site/og-image.png",
+  "author": { "@type": "Person", "name": "Hossam Hamdy" },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Migratik",
+    "logo": { "@type": "ImageObject", "url": "https://hossamhamdy99.github.io/migratik-site/icon.png" }
+  },
+  "mainEntityOfPage": "https://hossamhamdy99.github.io/migratik-site/blog/export-wordpress-to-json.html",
+  "datePublished": "2026-07-28",
+  "dateModified": "2026-07-28"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "How do I export a WordPress site to JSON?", "acceptedAnswer": { "@type": "Answer", "text": "You can pull posts from the WP REST API and assemble the JSON yourself, or use a tool that captures the whole site in one step. A free plugin like Migratik exports every content type into a single clean JSON file, with rendered content, SEO metadata, media, and custom fields already included, from a single button in the admin." } },
+    { "@type": "Question", "name": "What does a WordPress JSON export include?", "acceptedAnswer": { "@type": "Answer", "text": "A complete export includes the rendered content HTML, the title, slug, and permalink for redirects, SEO meta from Yoast, Rank Math, or All in One SEO, featured and in-content images with alt text, custom fields with image fields resolved to real media, taxonomies, and navigation menus." } },
+    { "@type": "Question", "name": "Can I export WordPress to JSON without code?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Install Migratik, open its screen in the WordPress admin, and click download. It produces the full JSON file with no command line and no code. Two read-only REST endpoints are also available if you want to automate the export from a build script." } },
+    { "@type": "Question", "name": "Does the JSON keep my SEO metadata and custom fields?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. The export carries your SEO meta and permalinks so you can rebuild titles, descriptions, canonicals, and 301 redirects, and it resolves ACF, JetEngine, and Pods image fields from attachment IDs into real media objects so nothing points at a dead number." } }
+  ]
+}
+</script>
+<style>
+  :root{
+    --ink:#0f1222; --ink-2:#2a2f45; --muted:#5b6178; --line:#e7e9f2;
+    --bg:#ffffff; --bg-2:#f7f8fc; --brand:#5b4bff; --brand-2:#8b5cff;
+    --brand-ink:#3b2fd6; --accent:#12c9a6; --warn:#ff9f43;
+    --radius:16px; --shadow:0 12px 40px rgba(24,20,80,.10); --maxw:1080px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:16px;padding:14px 24px;
+    border-radius:999px;border:1px solid transparent;cursor:pointer;transition:.18s;white-space:nowrap}
+  .btn-primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;box-shadow:0 8px 24px rgba(91,75,255,.35)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(91,75,255,.45)}
+  .btn-ghost{background:#fff;border-color:var(--line);color:var(--ink)}
+  .btn-ghost:hover{border-color:var(--brand);color:var(--brand-ink)}
+
+  nav:not(.toc){position:sticky;top:0;z-index:50;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;letter-spacing:-.02em}
+  .logo .mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--brand-2));
+    display:grid;place-items:center;color:#fff}
+  .nav-links{display:flex;gap:28px;align-items:center;font-size:15px;color:var(--muted);font-weight:600}
+  .nav-links a:hover{color:var(--ink)}
+  .nav-toggle{display:none}
+  .burger{display:none}
+  @media(max-width:720px){
+    .nav-links{display:none;position:absolute;top:64px;left:0;right:0;background:#fff;border-bottom:1px solid var(--line);flex-direction:column;gap:0;padding:6px 24px 14px;box-shadow:0 14px 26px rgba(24,20,80,.12)}
+    .nav-links a{padding:13px 2px;border-top:1px solid var(--line);font-size:16px}
+    .nav-toggle:checked ~ .nav-links{display:flex}
+    .burger{display:flex;flex-direction:column;justify-content:center;gap:5px;width:44px;height:40px;cursor:pointer;padding:9px 10px;margin-left:auto}
+    .burger span{display:block;height:2px;width:100%;background:var(--ink);border-radius:2px;transition:.2s}
+    .nav-toggle:checked ~ .burger span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+    .nav-toggle:checked ~ .burger span:nth-child(2){opacity:0}
+    .nav-toggle:checked ~ .burger span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+    .nav-cta{display:none}
+  }
+  .layout{max-width:760px;margin:0 auto;padding:0 24px}
+  .toc-spacer{display:none}
+  @media(min-width:1080px){
+    .layout{max-width:1060px;display:grid;grid-template-columns:236px minmax(0,1fr);column-gap:48px;align-items:start}
+    .toc-spacer{display:block}
+    .layout > .toc.side{position:sticky;top:88px;margin:0}
+    .layout > .toc.side ol{columns:1}
+    .layout > .main{min-width:0}
+  }
+
+  .article{max-width:760px;margin:0 auto;padding:0 24px}
+  .hd{padding:56px 0 8px;background:
+     radial-gradient(1000px 420px at 80% -20%,rgba(139,92,255,.14),transparent 60%),var(--bg)}
+  .crumb{font-size:13.5px;color:var(--muted);font-weight:600;margin-bottom:18px}
+  .crumb a{color:var(--brand-ink)}
+  .eyebrow{font-size:12.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--brand-ink)}
+  h1{font-size:clamp(30px,4.6vw,46px);font-weight:850;line-height:1.12;letter-spacing:-.02em;margin:14px 0 0;max-width:20ch}
+  .meta{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:14.5px;margin:22px 0 6px;flex-wrap:wrap}
+  .dot{width:4px;height:4px;border-radius:50%;background:var(--line)}
+  .lede{font-size:20px;color:var(--ink-2);line-height:1.55;margin:26px 0 8px}
+
+  article{font-size:17.5px;color:var(--ink-2);line-height:1.72}
+  article h2{font-size:clamp(23px,3vw,30px);font-weight:820;color:var(--ink);letter-spacing:-.015em;
+    margin:52px 0 4px;line-height:1.2;scroll-margin-top:84px}
+  article h3{font-size:20px;font-weight:750;color:var(--ink);margin:34px 0 2px}
+  article p{margin:16px 0}
+  article strong{color:var(--ink);font-weight:700}
+  article a.inline{color:var(--brand-ink);font-weight:600;border-bottom:1px solid rgba(91,75,255,.3)}
+  article a.inline:hover{border-color:var(--brand)}
+  article ul,article ol{margin:16px 0;padding-left:24px}
+  article li{margin:9px 0}
+  article ul li::marker{color:var(--brand)}
+  hr{border:0;border-top:1px solid var(--line);margin:44px 0}
+
+  .toc{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--radius);padding:22px 26px;margin:30px 0}
+  .toc .t{font-size:12.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+  .toc ol{margin:0;padding-left:20px;columns:2;column-gap:28px}
+  .toc li{margin:7px 0;font-size:15px;font-weight:600}
+  .toc a{color:var(--ink-2)}
+  .toc a:hover{color:var(--brand-ink)}
+  @media(max-width:640px){.toc ol{columns:1}}
+
+  code{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.9em;
+    background:rgba(91,75,255,.08);color:var(--brand-ink);padding:2px 6px;border-radius:6px}
+  pre{background:#141433;color:#e8e6ff;border-radius:14px;padding:20px 22px;overflow-x:auto;margin:22px 0;
+    font-size:14.5px;line-height:1.6;box-shadow:var(--shadow)}
+  pre code{background:none;color:inherit;padding:0;font-size:14.5px}
+  .cmt{color:#8f8bc9}
+  .kw{color:#a68bff}.str{color:#7ee0c2}.fn{color:#ffd580}
+
+  blockquote{margin:24px 0;padding:4px 22px;border-left:3px solid var(--brand);color:var(--ink-2);
+    background:linear-gradient(90deg,rgba(91,75,255,.05),transparent);border-radius:0 10px 10px 0}
+  blockquote p{margin:12px 0;font-size:17px}
+
+  .callout{border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;margin:26px 0;background:#fff;
+    box-shadow:0 2px 10px rgba(20,16,60,.04)}
+  .callout .k{font-size:12.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--brand-ink);margin-bottom:8px}
+  .callout.warn{border-color:rgba(255,159,67,.4);background:rgba(255,159,67,.06)}
+  .callout.warn .k{color:#c9760f}
+
+  .mgk{background:linear-gradient(135deg,#141433,#241a4d);color:#fff;border-radius:22px;padding:34px 34px;margin:40px 0;
+    box-shadow:var(--shadow)}
+  .mgk .row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  .mgk .mk{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,var(--brand),var(--brand-2));
+    display:grid;place-items:center}
+  .mgk h3{color:#fff;font-size:22px;font-weight:820;margin:0}
+  .mgk p{color:#c9c6f0;font-size:16px;margin:0 0 20px}
+  .mgk .btns{display:flex;gap:12px;flex-wrap:wrap}
+  .mgk .btn-primary{background:#fff;color:var(--brand-ink)}
+  .mgk .btn-line{background:transparent;border:1px solid rgba(255,255,255,.28);color:#fff}
+  .mgk .btn-line:hover{border-color:#fff}
+
+  .end-cta{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;text-align:center;
+    border-radius:24px;padding:52px 30px;margin:56px 0 10px}
+  .end-cta h2{color:#fff;font-size:clamp(24px,3.2vw,34px);font-weight:850;margin:0}
+  .end-cta p{color:#e9e6ff;max-width:52ch;margin:14px auto 26px;font-size:17.5px}
+  .end-cta .btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .end-cta .btn-primary{background:#fff;color:var(--brand-ink)}
+  .end-cta .btn-line{background:transparent;border:1px solid rgba(255,255,255,.55);color:#fff}
+
+  footer{padding:40px 0;color:var(--muted);font-size:14px;border-top:1px solid var(--line);margin-top:60px}
+  .foot-in{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  .foot-in .logo{font-size:16px}.foot-in .mark{width:24px;height:24px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-in">
+    <a class="logo" href="../index.html"><span class="mark"><svg viewBox="0 0 48 48" fill="#fff" style="width:17px;height:17px;display:block"><path d="M9 38V10h7.4L24 19.6 31.6 10H39v28h-6.2V19.4L24 30.4 15.2 19.4V38z"/><path d="M17.5 31.5h13L24 40.5z"/></svg></span> Migratik</a>
+    <input type="checkbox" id="navtoggle" class="nav-toggle" aria-label="Toggle menu">
+    <label for="navtoggle" class="burger" aria-hidden="true"><span></span><span></span><span></span></label>
+    <div class="nav-links">
+      <a href="../index.html#how">How it works</a>
+      <a href="../index.html#formats">Formats</a>
+      <a href="./index.html">Blog</a>
+      <a href="../index.html#pricing">Pricing</a>
+    </div>
+    <a href="../index.html#pricing" class="btn btn-primary nav-cta" style="padding:10px 20px;font-size:15px">Get Migratik Pro</a>
+  </div>
+</nav>
+
+<header class="hd">
+  <div class="layout">
+    <div class="toc-spacer" aria-hidden="true"></div>
+    <div class="main">
+    <div class="crumb"><a href="./index.html">Blog</a> &nbsp;/&nbsp; Formats</div>
+    <span class="eyebrow">WordPress &rarr; JSON</span>
+    <h1>How to Export a WordPress Site to JSON</h1>
+    <div class="meta">
+      <span>By Hossam Hamdy</span><span class="dot"></span>
+      <span>11 min read</span><span class="dot"></span>
+      <span>Updated July 2026</span>
+    </div>
+    <p class="lede">JSON is the format every modern stack speaks. Whether you are going headless, building a static site, or feeding content into an AI pipeline, a clean JSON export is the foundation. The content is the easy part. What quietly goes missing, your SEO meta, your custom-field images, and your redirects, is what this guide makes sure you keep.</p>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+<nav class="toc side">
+  <div class="t">What&rsquo;s inside</div>
+  <ol>
+    <li><a href="#why">Why JSON, and why it is the base format</a></li>
+    <li><a href="#breaks">The three things that usually break</a></li>
+    <li><a href="#shape">The shape of a good export</a></li>
+    <li><a href="#how">How to get it without writing an exporter</a></li>
+    <li><a href="#automate">Automating it over REST</a></li>
+    <li><a href="#next">Where to go from JSON</a></li>
+    <li><a href="#faq">Frequently asked questions</a></li>
+  </ol>
+</nav>
+<article class="main">
+
+<p>Moving off WordPress, or building anything on top of your content, almost always starts the same way: get the whole site out as structured data. JSON is the natural target, because a headless frontend, a static site generator, a search index, and an AI pipeline can all read it directly.</p>
+
+<p>The trap is that most quick exports grab the body text and leave behind everything attached to it. You launch, and a month later you are wondering why traffic dropped. Here is how to export to JSON so that nothing important is left behind.</p>
+
+<h2 id="why">Why JSON, and why it is the base format</h2>
+<p>JSON is the lowest common denominator for content. Once your site is a clean JSON file, converting it into anything else, <a class="inline" href="./export-wordpress-to-markdown.html">Markdown or MDX</a> for a static site, <a class="inline" href="./export-wordpress-to-csv.html">CSV</a> for a spreadsheet, or a headless CMS import, is a transform on data you already trust. That is why it is worth getting the JSON right first, and treating the other formats as views on top of it.</p>
+
+<h2 id="breaks">The three things that usually break</h2>
+<p>A naive export gives you titles and body text and calls it done. In practice, three things go missing, and each one costs you.</p>
+
+<h3>1. Your SEO meta, and with it your rankings</h3>
+<p>Your titles, meta descriptions, and canonical settings do not live in the post. They live in Yoast, Rank Math, or All in One SEO, tucked away in meta fields. Grab only the body and you ship every page without the meta that was ranking it. You also need your old permalinks, not necessarily to reuse them, but to build a redirect map. If a URL changes and nothing points the old address to the new one, that page starts again from zero in Google.</p>
+
+<h3>2. Media and custom-field images</h3>
+<p>Body images are the easy case. The hard case is images stored in custom fields. ACF, JetEngine, and Pods often store an image as an attachment ID, a bare number like <code>4192</code>. That number is meaningless on a new system. A good export has already looked up each ID and turned it into a real media object with a URL, alt text, and dimensions.</p>
+
+<h3>3. Everything structural</h3>
+<p>Categories, tags, custom taxonomies, and your navigation menus define how the site is organized. Rebuilding them by hand is slow and error prone. They should come along in the export as plain, readable data.</p>
+
+<div class="callout warn">
+  <div class="k">One more, for page builders</div>
+  <p>If your site runs Elementor, Bricks, WPBakery, Divi, or Oxygen, there is a fourth trap: the content itself comes back empty, because builders store their layout in hidden meta fields rather than in <code>post_content</code>. See <a class="inline" href="./export-elementor-bricks-to-json.html">exporting an Elementor or Bricks site to JSON</a> for why, and how to render it properly.</p>
+</div>
+
+<h2 id="shape">The shape of a good export</h2>
+<p>Pull those requirements together and the file you want holds, for every page, post, and custom post type, an object like this:</p>
+<pre><code>{
+  <span class="str">"type"</span>: <span class="str">"post"</span>,
+  <span class="str">"title"</span>: <span class="str">"Corneal Cross-Linking"</span>,
+  <span class="str">"slug"</span>: <span class="str">"corneal-cross-linking"</span>,
+  <span class="str">"permalink"</span>: <span class="str">"https://old-site.com/blog/corneal-cross-linking/"</span>,
+  <span class="str">"document_title"</span>: <span class="str">"Corneal Cross-Linking | Cairo Eye Center"</span>,
+  <span class="str">"content_html"</span>: <span class="str">"&lt;h2&gt;A minimally invasive...&lt;/h2&gt;..."</span>,
+  <span class="str">"seo"</span>: { <span class="str">"description"</span>: <span class="str">"..."</span>, <span class="str">"canonical"</span>: <span class="str">"..."</span> },
+  <span class="str">"featured_image"</span>: { <span class="str">"url"</span>: <span class="str">"...jpg"</span>, <span class="str">"alt"</span>: <span class="str">"..."</span>, <span class="str">"width"</span>: 1200 },
+  <span class="str">"custom_fields"</span>: { <span class="str">"doctor"</span>: <span class="str">"Dr. Sara"</span> },
+  <span class="str">"custom_fields_media"</span>: { <span class="str">"before_photo"</span>: { <span class="str">"url"</span>: <span class="str">"...jpg"</span>, <span class="str">"alt"</span>: <span class="str">"..."</span> } },
+  <span class="str">"taxonomies"</span>: { <span class="str">"category"</span>: [ { <span class="str">"name"</span>: <span class="str">"Procedures"</span>, <span class="str">"slug"</span>: <span class="str">"procedures"</span> } ] }
+}</code></pre>
+<p>The details that matter: <code>permalink</code> drives your redirect map, <code>document_title</code> and <code>seo</code> rebuild your search snippets, and <code>custom_fields_media</code> is the difference between real images and dead attachment numbers.</p>
+
+<h2 id="how">How to get it without writing an exporter</h2>
+<p>You can write a REST or WP-CLI script to assemble all of this. It is real work, especially the builder rendering and the custom-field image resolution, and it is work you do once and then throw away. The free plugin <a class="inline" href="https://wordpress.org/plugins/migratik/" target="_blank" rel="noopener">Migratik</a> does it out of the box.</p>
+
+<div class="mgk">
+  <div class="row">
+    <span class="mk"><svg viewBox="0 0 48 48" fill="#fff" style="width:22px;height:22px;display:block"><path d="M9 38V10h7.4L24 19.6 31.6 10H39v28h-6.2V19.4L24 30.4 15.2 19.4V38z"/><path d="M17.5 31.5h13L24 40.5z"/></svg></span>
+    <h3>Your whole site, one JSON file</h3>
+  </div>
+  <p>Install Migratik on the WordPress site you are exporting, open its screen, review the counts, and download one clean JSON file. It captures the rendered content, the SEO meta, the permalinks for redirects, the featured and in-content images, and the ACF, JetEngine, and Pods fields with image fields already resolved to real media. It is read-only and builder-agnostic, so it is safe on a live site and does not come back empty for page builder pages.</p>
+  <div class="btns">
+    <a class="btn btn-primary" href="https://wordpress.org/plugins/migratik/" target="_blank" rel="noopener">Install free on WordPress.org</a>
+    <a class="btn btn-line" href="../index.html#how">See how it works</a>
+  </div>
+</div>
+
+<h2 id="automate">Automating it over REST</h2>
+<p>For a one-off migration, the download button is all you need. If you want the export to run from a build script or a scheduled job, two read-only REST endpoints back the same capture:</p>
+<pre><code><span class="cmt"># Counts per content type, a quick manifest</span>
+curl <span class="str">"https://your-site.com/wp-json/migratik/v1/manifest?key=YOUR_KEY"</span>
+
+<span class="cmt"># The full export payload as JSON</span>
+curl <span class="str">"https://your-site.com/wp-json/migratik/v1/all?key=YOUR_KEY"</span> \
+  -o wordpress-export.json</code></pre>
+<p>Both require a logged-in administrator or the Migratik REST key, so your content is not exposed publicly. That makes it easy to pull fresh content into a static build on every deploy, rather than exporting by hand each time.</p>
+
+<h2 id="next">Where to go from your JSON</h2>
+<p>Once you have the file, the destination decides the next step. Our guides pick up from here: <a class="inline" href="./migrate-wordpress-to-nextjs-without-losing-seo.html">migrating to Next.js</a>, <a class="inline" href="./migrate-wordpress-to-astro-without-losing-seo.html">migrating to Astro</a>, <a class="inline" href="./wordpress-to-headless-cms.html">moving to a headless CMS</a>, or <a class="inline" href="./migrate-wordpress-to-wordpress.html">rebuilding on another WordPress install</a>, each without losing your SEO. If you would rather have files than raw JSON, Migratik Pro turns the same capture into <a class="inline" href="./export-wordpress-to-markdown.html">Markdown or MDX</a> with front matter, or <a class="inline" href="./export-wordpress-to-csv.html">CSV</a>, and can bundle every image alongside the export with the URLs rewritten, so the result is self-contained.</p>
+
+<hr>
+
+<h2 id="faq">Frequently asked questions</h2>
+<h3>How do I export a WordPress site to JSON?</h3>
+<p>You can pull posts from the WP REST API and assemble the JSON yourself, or use a tool that captures the whole site in one step. A free plugin like <a class="inline" href="https://wordpress.org/plugins/migratik/" target="_blank" rel="noopener">Migratik</a> exports every content type into a single clean JSON file, with rendered content, SEO metadata, media, and custom fields already included, from a single button in the admin.</p>
+<h3>What does a WordPress JSON export include?</h3>
+<p>A complete export includes the rendered content HTML, the title, slug, and permalink for redirects, SEO meta from Yoast, Rank Math, or All in One SEO, featured and in-content images with alt text, custom fields with image fields resolved to real media, taxonomies, and navigation menus.</p>
+<h3>Can I export WordPress to JSON without code?</h3>
+<p>Yes. Install Migratik, open its screen in the WordPress admin, and click download. It produces the full JSON file with no command line and no code. Two read-only REST endpoints are also available if you want to automate the export from a build script.</p>
+<h3>Does the JSON keep my SEO metadata and custom fields?</h3>
+<p>Yes. The export carries your SEO meta and permalinks so you can rebuild titles, descriptions, canonicals, and 301 redirects, and it resolves ACF, JetEngine, and Pods image fields from attachment IDs into real media objects so nothing points at a dead number.</p>
+
+<div class="end-cta">
+  <h2>Export your site to JSON</h2>
+  <p>Migratik packs your whole WordPress site (rendered content, SEO metadata, permalinks, images, and custom fields) into one clean JSON file. Free to install, read-only, and safe on a live site.</p>
+  <div class="btns">
+    <a class="btn btn-primary" href="https://wordpress.org/plugins/migratik/" target="_blank" rel="noopener">Install free on WordPress.org</a>
+    <a class="btn btn-line" href="../index.html#pricing">See Migratik Pro</a>
+  </div>
+</div>
+
+</article>
+</div>
+
+<footer>
+  <div class="wrap foot-in">
+    <a class="logo" href="../index.html"><span class="mark"><svg viewBox="0 0 48 48" fill="#fff" style="width:14px;height:14px;display:block"><path d="M9 38V10h7.4L24 19.6 31.6 10H39v28h-6.2V19.4L24 30.4 15.2 19.4V38z"/><path d="M17.5 31.5h13L24 40.5z"/></svg></span> Migratik</a>
+    <div>&copy; 2026 Migratik &middot; Built by Hossam Hamdy &middot; A builder-agnostic WordPress migration exporter.</div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Export an Elementor or Bricks Site to JSON (When the Export Comes Back Empty)</title>
+<meta name="description" content="WordPress' built-in export leaves Elementor and Bricks pages empty. Here is why it happens and how to export a page builder site to clean JSON with SEO, media, and custom fields intact.">
+<link rel="canonical" href="https://hossamhamdy99.github.io/migratik-site/blog/export-elementor-bricks-to-json.html">
+<link rel="icon" type="image/png" href="../icon.png">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Migratik">
+<meta property="og:title" content="How to Export an Elementor or Bricks Site to JSON">
+<meta property="og:description" content="Why the built-in WordPress export comes back empty for page builders, and how to get a clean JSON export with content, SEO, and media intact.">
+<meta property="og:url" content="https://hossamhamdy99.github.io/migratik-site/blog/export-elementor-bricks-to-json.html">
+<meta property="og:image" content="https://hossamhamdy99.github.io/migratik-site/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="How to Export an Elementor or Bricks Site to JSON">
+<meta name="twitter:description" content="The built-in export leaves builder pages empty. Here is how to export them to clean JSON with content, SEO, and media intact.">
+<meta name="twitter:image" content="https://hossamhamdy99.github.io/migratik-site/og-image.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "How to Export an Elementor or Bricks Site to JSON",
+  "description": "Why the built-in WordPress export comes back empty for Elementor and Bricks, and how to export a page builder site to clean JSON with content, SEO, and media intact.",
+  "image": "https://hossamhamdy99.github.io/migratik-site/og-image.png",
+  "author": { "@type": "Person", "name": "Hossam Hamdy" },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Migratik",
+    "logo": { "@type": "ImageObject", "url": "https://hossamhamdy99.github.io/migratik-site/icon.png" }
+  },
+  "mainEntityOfPage": "https://hossamhamdy99.github.io/migratik-site/blog/export-elementor-bricks-to-json.html",
+  "datePublished": "2026-07-28",
+  "dateModified": "2026-07-28"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "Why is my WordPress export empty for Elementor or Bricks pages?", "acceptedAnswer": { "@type": "Answer", "text": "Page builders store their layout in hidden meta fields, not in the post_content column that the built-in exporter reads. Elementor keeps its data in _elementor_data and Bricks in its own meta field, so the visible post_content is often blank. The exporter reads an empty column and hands you an empty page." } },
+    { "@type": "Question", "name": "How do I export an Elementor or Bricks page as JSON?", "acceptedAnswer": { "@type": "Answer", "text": "Render each page through the builder's own engine and capture the output, rather than reading post_content. A free tool like Migratik detects the builder per page, renders Elementor, Bricks, Beaver Builder, Oxygen, WPBakery, and Divi with the correct method, and hands you one clean JSON file with the real content, SEO meta, and media." } },
+    { "@type": "Question", "name": "Does the export keep my SEO metadata and images?", "acceptedAnswer": { "@type": "Answer", "text": "It should. A good export carries the title, slug, and permalink for redirects, the SEO meta from Yoast, Rank Math, or All in One SEO, the featured and in-content images with alt text, and custom fields with image fields resolved from attachment IDs to real media URLs." } },
+    { "@type": "Question", "name": "Is it safe to run on a live production site?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, as long as the tool is read-only. Migratik only reads your content and returns a file. It never writes to your posts or database, so it is safe on a live site, and it leaves nothing behind when you delete it." } }
+  ]
+}
+</script>
+<style>
+  :root{
+    --ink:#0f1222; --ink-2:#2a2f45; --muted:#5b6178; --line:#e7e9f2;
+    --bg:#ffffff; --bg-2:#f7f8fc; --brand:#5b4bff; --brand-2:#8b5cff;
+    --brand-ink:#3b2fd6; --accent:#12c9a6; --warn:#ff9f43;
+    --radius:16px; --shadow:0 12px 40px rgba(24,20,80,.10); --maxw:1080px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:16px;padding:14px 24px;
+    border-radius:999px;border:1px solid transparent;cursor:pointer;transition:.18s;white-space:nowrap}
+  .btn-primary{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;box-shadow:0 8px 24px rgba(91,75,255,.35)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(91,75,255,.45)}
+  .btn-ghost{background:#fff;border-color:var(--line);color:var(--ink)}
+  .btn-ghost:hover{border-color:var(--brand);color:var(--brand-ink)}
+
+  nav:not(.toc){position:sticky;top:0;z-index:50;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;letter-spacing:-.02em}
+  .logo .mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--brand-2));
+    display:grid;place-items:center;color:#fff}
+  .nav-links{display:flex;gap:28px;align-items:center;font-size:15px;color:var(--muted);font-weight:600}
+  .nav-links a:hover{color:var(--ink)}
+  .nav-toggle{display:none}
+  .burger{display:none}
+  @media(max-width:720px){
+    .nav-links{display:none;position:absolute;top:64px;left:0;right:0;background:#fff;border-bottom:1px solid var(--line);flex-direction:column;gap:0;padding:6px 24px 14px;box-shadow:0 14px 26px rgba(24,20,80,.12)}
+    .nav-links a{padding:13px 2px;border-top:1px solid var(--line);font-size:16px}
+    .nav-toggle:checked ~ .nav-links{display:flex}
+    .burger{display:flex;flex-direction:column;justify-content:center;gap:5px;width:44px;height:40px;cursor:pointer;padding:9px 10px;margin-left:auto}
+    .burger span{display:block;height:2px;width:100%;background:var(--ink);border-radius:2px;transition:.2s}
+    .nav-toggle:checked ~ .burger span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+    .nav-toggle:checked ~ .burger span:nth-child(2){opacity:0}
+    .nav-toggle:checked ~ .burger span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+    .nav-cta{display:none}
+  }
+  .layout{max-width:760px;margin:0 auto;padding:0 24px}
+  .toc-spacer{display:none}
+  @media(min-width:1080px){
+    .layout{max-width:1060px;display:grid;grid-template-columns:236px minmax(0,1fr);column-gap:48px;align-items:start}
+    .toc-spacer{display:block}
+    .layout > .toc.side{position:sticky;top:88px;margin:0}
+    .layout > .toc.side ol{columns:1}
+    .layout > .main{min-width:0}
+  }
+
+  .article{max-width:760px;margin:0 auto;padding:0 24px}
+  .hd{padding:56px 0 8px;background:
+     radial-gradient(1000px 420px at 80% -20%,rgba(139,92,255,.14),transparent 60%),var(--bg)}
+  .crumb{font-size:13.5px;color:var(--muted);font-weight:600;margin-bottom:18px}
+  .crumb a{color:var(--brand-ink)}
+  .eyebrow{font-size:12.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--brand-ink)}
+  h1{font-size:clamp(30px,4.6vw,46px);font-weight:850;line-height:1.12;letter-spacing:-.02em;margin:14px 0 0;max-width:20ch}
+  .meta{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:14.5px;margin:22px 0 6px;flex-wrap:wrap}
+  .dot{width:4px;height:4px;border-radius:50%;background:var(--line)}
+  .lede{font-size:20px;color:var(--ink-2);line-height:1.55;margin:26px 0 8px}
+
+  article{font-size:17.5px;color:var(--ink-2);line-height:1.72}
+  article h2{font-size:clamp(23px,3vw,30px);font-weight:820;color:var(--ink);letter-spacing:-.015em;
+    margin:52px 0 4px;line-height:1.2;scroll-margin-top:84px}
+  article h3{font-size:20px;font-weight:750;color:var(--ink);margin:34px 0 2px}
+  article p{margin:16px 0}
+  article strong{color:var(--ink);font-weight:700}
+  article a.inline{color:var(--brand-ink);font-weight:600;border-bottom:1px solid rgba(91,75,255,.3)}
+  article a.inline:hover{border-color:var(--brand)}
+  article ul,article ol{margin:16px 0;padding-left:24px}
+  article li{margin:9px 0}
+  article ul li::marker{color:var(--brand)}
+  hr{border:0;border-top:1px solid var(--line);margin:44px 0}
+
+  .toc{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--radius);padding:22px 26px;margin:30px 0}
+  .toc .t{font-size:12.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+  .toc ol{margin:0;padding-left:20px;columns:2;column-gap:28px}
+  .toc li{margin:7px 0;font-size:15px;font-weight:600}
+  .toc a{color:var(--ink-2)}
+  .toc a:hover{color:var(--brand-ink)}
+  @media(max-width:640px){.toc ol{columns:1}}
+
+  code{font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;font-size:.9em;
+    background:rgba(91,75,255,.08);color:var(--brand-ink);padding:2px 6px;border-radius:6px}
+  pre{background:#141433;color:#e8e6ff;border-radius:14px;padding:20px 22px;overflow-x:auto;margin:22px 0;
+    font-size:14.5px;line-height:1.6;box-shadow:var(--shadow)}
+  pre code{background:none;color:inherit;padding:0;font-size:14.5px}
+  .cmt{color:#8f8bc9}
+  .kw{color:#a68bff}.str{color:#7ee0c2}.fn{color:#ffd580}
+
+  blockquote{margin:24px 0;padding:4px 22px;border-left:3px solid var(--brand);color:var(--ink-2);
+    background:linear-gradient(90deg,rgba(91,75,255,.05),transparent);border-radius:0 10px 10px 0}
+  blockquote p{margin:12px 0;font-size:17px}
+
+  .callout{border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;margin:26px 0;background:#fff;
+    box-shadow:0 2px 10px rgba(20,16,60,.04)}
+  .callout .k{font-size:12.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--brand-ink);margin-bottom:8px}
+  .callout.warn{border-color:rgba(255,159,67,.4);background:rgba(255,159,67,.06)}
+  .callout.warn .k{color:#c9760f}
+
+  .mgk{background:linear-gradient(135deg,#141433,#241a4d);color:#fff;border-radius:22px;padding:34px 34px;margin:40px 0;
+    box-shadow:var(--shadow)}
+  .mgk .row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  .mgk .mk{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,var(--brand),var(--brand-2));
+    display:grid;place-items:center}
+  .mgk h3{color:#fff;font-size:22px;font-weight:820;margin:0}
+  .mgk p{color:#c9c6f0;font-size:16px;margin:0 0 20px}
+  .mgk .btns{display:flex;gap:12px;flex-wrap:wrap}
+  .mgk .btn-primary{background:#fff;color:var(--brand-ink)}
+  .mgk .btn-line{background:transparent;border:1px solid rgba(255,255,255,.28);color:#fff}
+  .mgk .btn-line:hover{border-color:#fff}
+
+  .end-cta{background:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;text-align:center;
+    border-radius:24px;padding:52px 30px;margin:56px 0 10px}
+  .end-cta h2{color:#fff;font-size:clamp(24px,3.2vw,34px);font-weight:850;margin:0}
+  .end-cta p{color:#e9e6ff;max-width:52ch;margin:14px auto 26px;font-size:17.5px}
+  .end-cta .btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .end-cta .btn-primary{background:#fff;color:var(--brand-ink)}
+  .end-cta .btn-line{background:transparent;border:1px solid rgba(255,255,255,.55);color:#fff}
+
+  footer{padding:40px 0;color:var(--muted);font-size:14px;border-top:1px solid var(--line);margin-top:60px}
+  .foot-in{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+  .foot-in .logo{font-size:16px}.foot-in .mark{width:24px;height:24px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-in">
+    <a class="logo" href="../index.html"><span class="mark"><svg viewBox="0 0 48 48" fill="#fff" style="width:17px;height:17px;display:block"><path d="M9 38V10h7.4L24 19.6 31.6 10H39v28h-6.2V19.4L24 30.4 15.2 19.4V38z"/><path d="M17.5 31.5h13L24 40.5z"/></svg></span> Migratik</a>
+    <input type="checkbox" id="navtoggle" class="nav-toggle" aria-label="Toggle menu">
+    <label for="navtoggle" class="burger" aria-hidden="true"><span></span><span></span><span></span></label>
+    <div class="nav-links">
+      <a href="../index.html#how">How it works</a>
+      <a href="../index.html#formats">Formats</a>
+      <a href="./index.html">Blog</a>
+      <a href="../index.html#pricing">Pricing</a>
+    </div>
+    <a href="../index.html#pricing" class="btn btn-primary nav-cta" style="padding:10px 20px;font-size:15px">Get Migratik Pro</a>
+  </div>
+</nav>
+
+<header class="hd">
+  <div class="layout">
+    <div class="toc-spacer" aria-hidden="true"></div>
+    <div class="main">
+    <div class="crumb"><a href="./index.html">Blog</a> &nbsp;/&nbsp; Page builders</div>
+    <span class="eyebrow">Page builders &rarr; JSON</span>
+    <h1>How to Export an Elementor or Bricks Site to JSON</h1>
+    <div class="meta">
+      <span>By Hossam Hamdy</span><span class="dot"></span>
+      <span>10 min read</span><span class="dot"></span>
+      <span>Updated July 2026</span>
+    </div>
+    <p class="lede">You built the site in Elementor or Bricks, it looks great in the browser, and then the built-in export hands you a file where the pages are empty. This is not a bug and you did nothing wrong. It is how page builders store their data, and once you see why, the fix is straightforward.</p>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+<nav class="toc side">
+  <div class="t">What&rsquo;s inside</div>
+  <ol>
+    <li><a href="#empty">Why the standard export looks empty</a></li>
+    <li><a href="#needs">What a clean export actually needs</a></li>
+    <li><a href="#render">Rendering each builder correctly</a></li>
+    <li><a href="#practical">The practical way to do it</a></li>
+    <li><a href="#result">What you end up with</a></li>
+    <li><a href="#faq">Frequently asked questions</a></li>
+  </ol>
+</nav>
+<article class="main">
+
+<p>If you have ever tried to move a page builder site somewhere else, you already know the sinking feeling. You open <strong>Tools &rarr; Export</strong>, download the XML, and the text you can clearly see on screen is nowhere in the file. Feed that export into a headless framework, a static site generator, or another WordPress install and you get blank pages.</p>
+
+<p>This guide explains exactly why it happens, what a portable export has to contain instead, and how to get an Elementor or Bricks site out as clean JSON with the content, SEO, and media intact.</p>
+
+<h2 id="empty">Why the standard WordPress export looks empty</h2>
+<p>When you write in the classic editor or in Gutenberg, your words go into a database column called <code>post_content</code>. The built-in exporter reads that column, so what you see is what you get.</p>
+<p>Page builders work differently. Elementor keeps its layout in a hidden meta field called <code>_elementor_data</code>, stored as a long serialized JSON blob. Bricks does the same thing in its own meta field. The visible <code>post_content</code> for those pages is often blank or holds a single placeholder. So when the exporter reads <code>post_content</code>, there is genuinely nothing there to read.</p>
+<p>If you look at what the builder actually stores, it is not your content, it is a set of instructions for how to draw your content:</p>
+<pre><code><span class="cmt">// _elementor_data, simplified. This is what the builder stores,</span>
+<span class="cmt">// not the text a visitor reads.</span>
+[
+  { <span class="str">"elType"</span>: <span class="str">"section"</span>, <span class="str">"elements"</span>: [
+    { <span class="str">"elType"</span>: <span class="str">"widget"</span>, <span class="str">"widgetType"</span>: <span class="str">"heading"</span>,
+      <span class="str">"settings"</span>: { <span class="str">"title"</span>: <span class="str">"Corneal Cross-Linking"</span> } },
+    { <span class="str">"elType"</span>: <span class="str">"widget"</span>, <span class="str">"widgetType"</span>: <span class="str">"text-editor"</span>,
+      <span class="str">"settings"</span>: { <span class="str">"editor"</span>: <span class="str">"&lt;p&gt;A minimally invasive...&lt;/p&gt;"</span> } }
+  ] }
+]</code></pre>
+<p>That blob is not useless, but it is only useful to the exact builder that created it, on a site with the same builder, the same version, and the same custom widgets installed. Give it to a headless framework or a plain importer and it means nothing. You need the <strong>rendered</strong> result, the actual HTML a visitor sees, not the builder&rsquo;s internal drawing instructions.</p>
+
+<h2 id="needs">What a clean export actually needs</h2>
+<p>Getting real content out of a page builder site means rendering each page the way the browser does, through the builder&rsquo;s own engine, and then capturing the output. A JSON export that is genuinely portable should hold more than body text. For every page and post you want:</p>
+<ul>
+  <li><strong>The rendered HTML</strong>, with builder shortcodes and blocks already executed, so the content is real text and markup rather than a serialized blob.</li>
+  <li><strong>The title, slug, and permalink.</strong> These are what you use to build 301 redirects so you do not lose your search rankings on the new site.</li>
+  <li><strong>SEO meta</strong> from whatever plugin you use, whether that is Yoast, Rank Math, or All in One SEO.</li>
+  <li><strong>The featured image and every in-content image</strong>, with alt text and dimensions.</li>
+  <li><strong>Custom fields</strong>, including image fields from ACF, JetEngine, or Pods, resolved from bare attachment IDs into real media URLs.</li>
+  <li><strong>Categories, tags, custom taxonomies, and your navigation menus.</strong></li>
+</ul>
+<p>Miss any of these and the migration turns into weeks of manual cleanup. The images are the usual trap, because builders and custom fields often store an image as a number that points to an attachment, and that number means nothing on a new system.</p>
+
+<div class="callout warn">
+  <div class="k">The core problem</div>
+  <p>A generic exporter that reads <code>post_content</code> will always come back empty for builder pages. The only reliable fix is to render each page through the builder that made it, then capture the HTML that comes out.</p>
+</div>
+
+<h2 id="render">Rendering each builder correctly</h2>
+<p>The reason a single generic exporter struggles is that every builder needs a different call to produce its final HTML. There is no one function that covers them all:</p>
+<pre><code><span class="cmt">// Each builder exposes its own render path.</span>
+<span class="cmt">// Elementor</span>
+<span class="kw">$html</span> = Elementor\Plugin::<span class="fn">$instance</span>->frontend
+          ->get_builder_content_for_display( <span class="kw">$post_id</span> );
+
+<span class="cmt">// Bricks</span>
+<span class="kw">$html</span> = \Bricks\Frontend::<span class="fn">render_data</span>( <span class="kw">$elements</span> );
+
+<span class="cmt">// Beaver Builder</span>
+<span class="kw">$html</span> = FLBuilder::<span class="fn">render_content_by_id</span>( <span class="kw">$post_id</span> );
+
+<span class="cmt">// Gutenberg, Classic, WPBakery, Divi: the standard pipeline</span>
+<span class="kw">$html</span> = <span class="fn">apply_filters</span>( <span class="str">'the_content'</span>, <span class="kw">$post</span>->post_content );</code></pre>
+<p>If an export tool does not know which builder made a page, it calls the wrong method, and you are back to an empty result. The correct approach is to <strong>detect the builder per page</strong>, render it with the matching engine, and tag each item with the path that was used, so an empty render is something you can actually see and check rather than a silent failure.</p>
+
+<h2 id="practical">The practical way to do it</h2>
+<p>You can write all of this yourself if you are comfortable in PHP and you have time to handle every builder and every edge case. Most people would rather not. This is exactly the gap the free plugin <a class="inline" href="https://wordpress.org/plugins/migratik/" target="_blank" rel="noopener">Migratik</a> was built to fill.</p>
+
+<div class="mgk">
+  <div class="row">
+    <span class="mk"><svg viewBox="0 0 48 48" fill="#fff" style="width:22px;height:22px;display:block"><path d="M9 38V10h7.4L24 19.6 31.6 10H39v28h-6.2V19.4L24 30.4 15.2 19.4V38z"/><path d="M17.5 31.5h13L24 40.5z"/></svg></span>
+    <h3>Built for exactly this problem</h3>
+  </div>
+  <p>Migratik detects the builder on every page and renders Elementor, Bricks, Beaver Builder, Oxygen, WPBakery, Divi, and Gutenberg each with the right engine, so the content comes out as real HTML instead of a serialized blob. It packs the whole site into one clean JSON file, and each item is tagged with the render path used, so an empty render is visible rather than silent. It is read-only, so it is safe to run on the live site you are migrating.</p>
+  <div class="btns">
+    <a class="btn btn-primary" href="https://wordpress.org/plugins/migratik/" target="_blank" rel="noopener">Install free on WordPress.org</a>
+    <a class="btn btn-line" href="../index.html#how">See how it works</a>
+  </div>
+</div>
+
+<p>The workflow is short. Install the plugin on the site you are exporting, open the Migratik screen, review the counts of what will be packed, and click one button to download a single JSON file. Because it started life moving a real WPBakery site onto a Next.js and Supabase stack, the awkward parts, the builder rendering and the custom-field image resolution, are already handled.</p>
+
+<h2 id="result">What you end up with</h2>
+<p>The result is one JSON file where every item carries its rendered <code>content_html</code>, its raw <code>content_raw</code>, the title and slug and permalink you need for redirects, the SEO meta, the featured and in-content images with alt text, the ACF and JetEngine and Pods fields with image fields already resolved to real media objects, the taxonomies, and your menus. That is a file you can hand to a developer, feed into a static site generator, or import into another system, and everything that mattered on the old site is still there.</p>
+<p>From there it depends on where you are going. If your destination is a modern framework, our step-by-step guides pick up where the export leaves off: <a class="inline" href="./migrate-wordpress-to-nextjs-without-losing-seo.html">migrating to Next.js</a>, <a class="inline" href="./migrate-wordpress-to-astro-without-losing-seo.html">migrating to Astro</a>, or <a class="inline" href="./wordpress-to-headless-cms.html">moving to a headless CMS</a>, all without losing your SEO. If your destination needs a specific shape, Migratik Pro converts the same capture into <a class="inline" href="./export-wordpress-to-markdown.html">Markdown or MDX</a>, WXR, or <a class="inline" href="./export-wordpress-to-csv.html">CSV</a>. The free tier captures everything and never expires, so you can see your full export before deciding whether you need any of that.</p>
+
+<hr>
+
+<h2 id="faq">Frequently asked questions</h2>
+<h3>Why is my WordPress export empty for Elementor or Bricks pages?</h3>
+<p>Page builders store their layout in hidden meta fields, not in the <code>post_content</code> column that the built-in exporter reads. Elementor keeps its data in <code>_elementor_data</code> and Bricks in its own meta field, so the visible <code>post_content</code> is often blank. The exporter reads an empty column and hands you an empty page.</p>
+<h3>How do I export an Elementor or Bricks page as JSON?</h3>
+<p>Render each page through the builder&rsquo;s own engine and capture the output, rather than reading <code>post_content</code>. A free tool like <a class="inline" href="https://wordpress.org/plugins/migratik/" target="_blank" rel="noopener">Migratik</a> detects the builder per page, renders it with the correct method, and hands you one clean JSON file with the real content, SEO meta, and media.</p>
+<h3>Does the export keep my SEO metadata and images?</h3>
+<p>It should. A good export carries the title, slug, and permalink for redirects, the SEO meta from Yoast, Rank Math, or All in One SEO, the featured and in-content images with alt text, and custom fields with image fields resolved from attachment IDs to real media URLs.</p>
+<h3>Is it safe to run on a live production site?</h3>
+<p>Yes, as long as the tool is read-only. Migratik only reads your content and returns a file. It never writes to your posts or database, so it is safe on a live site, and it leaves nothing behind when you delete it.</p>
+
+<div class="end-cta">
+  <h2>Get your builder site out, in full</h2>
+  <p>Migratik renders Elementor, Bricks, and every major builder through its own engine, then packs the whole site (content, SEO, media, and custom fields) into one clean JSON file. Free to install, read-only, and safe on a live site.</p>
+  <div class="btns">
+    <a class="btn btn-primary" href="https://wordpress.org/plugins/migratik/" target="_blank" rel="noopener">Install free on WordPress.org</a>
+    <a class="btn btn-line" href="../index.html#pricing">See Migratik Pro</a>
+  </div>
+</div>
+
+</article>
+</div>
+
+<footer>
+  <div class="wrap foot-in">
+    <a class="logo" href="../index.html"><span class="mark"><svg viewBox="0 0 48 48" fill="#fff" style="width:14px;height:14px;display:block"><path d="M9 38V10h7.4L24 19.6 31.6 10H39v28h-6.2V19.4L24 30.4 15.2 19.4V38z"/><path d="M17.5 31.5h13L24 40.5z"/></svg></span> Migratik</a>
+    <div>&copy; 2026 Migratik &middot; Built by Hossam Hamdy &middot; A builder-agnostic WordPress migration exporter.</div>
+  </div>
+</footer>
+
+</body>
+</html>
